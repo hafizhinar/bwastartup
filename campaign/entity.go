@@ -11,8 +11,8 @@ type Campaign struct {
 	Name             string
 	ShortDescription string
 	Description      string
-	TargetAmount     string
-	CurrentAmount    string
+	TargetAmount     float64
+	CurrentAmount    float64
 	Perks            string
 	BackerCount      uint64
 	Slug             string
