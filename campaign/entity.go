@@ -8,7 +8,7 @@ type Campaign struct {
 	Name             string
 	ShortDescription string
 	Description      string
-	TargeAmount      string
+	TargetAmount     string
 	CurrentAmount    string
 	Perks            string
 	BackerCount      uint64
