@@ -13,6 +13,7 @@ type Transactions struct {
 	Code       string
 	Amount     float64
 	Status     int
+	PaymentURL string
 	User       user.User
 	Campaign   campaign.Campaign
 	CreatedAt  time.Time
