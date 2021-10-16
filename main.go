@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -23,18 +24,6 @@ import (
 )
 
 func main() {
-
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Println("Error load env file")
-	}
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Println("No Port environment. Using Default")
-		port = "8080"
-	}
 
 	//with password
 	//dsn := "root:p@ssw0rd@tcp(127.0.0.1:3306)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
@@ -62,6 +51,7 @@ func main() {
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 
 	router := gin.Default()
+	router.Use(cors.Default())
 	router.Use(gin.Logger())
 	router.Static("/images", "./images")
 	api := router.Group("api/v1")
@@ -81,6 +71,17 @@ func main() {
 	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateTransactions)
 
+	err = godotenv.Load()
+
+	if err != nil {
+		log.Println("Error load env file")
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Println("No Port environment. Using Default")
+		port = "8080"
+	}
 	// router.Run()
 	router.Run(":" + port)
 }
