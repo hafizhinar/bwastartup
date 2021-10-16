@@ -1,2 +1,5 @@
-images
+images/
 .DS_Store
+.docker_build/
+bin/
+.env

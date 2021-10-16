@@ -10,15 +10,32 @@ import (
 	"bwastartup/user"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	_ "github.com/heroku/x/hmetrics/onload"
 )
 
 func main() {
+
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Println("Error load env file")
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Println("No Port environment. Using Default")
+		port = "8080"
+	}
+
 	//with password
 	//dsn := "root:p@ssw0rd@tcp(127.0.0.1:3306)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
 
@@ -36,15 +53,16 @@ func main() {
 
 	userService := user.NewService(userRepository)
 	campaignService := campaign.NewService(campaignRepository)
-	paymentService := payment.NewService(transactionRepository, campaignRepository)
+	paymentService := payment.NewService()
 	authService := auth.NewService()
 	transactionService := transaction.NewService(transactionRepository, campaignRepository, paymentService)
 
 	userHandler := handler.NewUserHandler(userService, authService)
 	campaignHandler := handler.NewCampaignHandler(campaignService)
-	transactionHandler := handler.NewTransactionHandler(transactionService, paymentService)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
 
 	router := gin.Default()
+	router.Use(gin.Logger())
 	router.Static("/images", "./images")
 	api := router.Group("api/v1")
 
@@ -63,7 +81,8 @@ func main() {
 	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateTransactions)
 
-	router.Run()
+	// router.Run()
+	router.Run(":" + port)
 }
 
 func authMiddleware(authService auth.Service, userService user.Service) gin.HandlerFunc {
