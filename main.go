@@ -28,8 +28,12 @@ func main() {
 	//with password
 	//dsn := "root:p@ssw0rd@tcp(127.0.0.1:3306)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
 
-	//without Password
-	dsn := "root@tcp(127.0.0.1:3306)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
+	// google cloud db
+	dsn := "root:password@tcp(34.101.173.146:3306)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
+
+	//without Password local db
+	//dsn := "root@tcp(127.0.0.1:3306)/bwastartup?charset=utf8mb4&parseTime=True&loc=Local"
+
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
